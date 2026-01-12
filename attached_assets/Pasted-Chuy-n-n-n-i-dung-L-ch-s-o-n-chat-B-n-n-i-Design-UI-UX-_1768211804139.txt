@@ -1,0 +1,103 @@
+Chuyển đến nội dung
+Lịch sử đoạn chat
+
+
+
+Bạn đã nói:
+Design UI/UX hoàn chỉnh cho tất cả các màn trong app:
+Các màn hình chính trong app
+SplashScreen (splash_screen.dart)
+Màn hình khởi động, hiển thị logo và vòng tròn loading.
+Sau khoảng 2 giây sẽ kiểm tra trạng thái đăng nhập từ AuthProvider: nếu đã đăng nhập thì chuyển sang HomeScreen, nếu chưa thì chuyển sang LoginScreen.
+LoginScreen (login_screen.dart)
+Màn hình đăng nhập đơn giản với logo, tên app và mô tả ngắn: “AI-Powered Image & Video Creation”.
+Có nút “Sign in with Google”; khi bấm sẽ dùng AuthProvider đăng nhập Google, nếu thành công thì load credits và chuyển sang HomeScreen. Hiển thị lỗi nếu đăng nhập thất bại.
+HomeScreen (home_screen.dart)
+Màn hình chính sau khi đăng nhập.
+Phần đầu hiển thị số credits hiện tại (lấy từ CreditProvider) và nút “Top up now” dẫn đến PurchaseScreen.
+Nút lớn “Create New Task” để tạo tác vụ mới (tạo ảnh).
+Danh sách các task (từ TaskProvider): mỗi thẻ hiển thị trạng thái, ngày tạo, ảnh sản phẩm và thông tin kết quả (số ảnh try-on, số video). Bấm vào một task sẽ mở TaskDetailScreen.
+AppBar có nút ví (chuyển sang PurchaseScreen) và nút đăng xuất (sign out rồi quay về LoginScreen).
+CreateTaskScreen (create_task_screen.dart)
+Màn hình tạo task mới để AI tạo ảnh thử đồ.
+Bước 1: Chọn ảnh sản phẩm (chụp bằng camera hoặc lấy từ gallery) và tự động upload lên server (dùng UploadService).
+Bước 2: Cấu hình task:
+Chọn “Có người mẫu / Không có người mẫu” (_hasModel).
+Chọn bối cảnh (context) từ danh sách ConstantsProvider.contexts hoặc nhập bối cảnh tùy chỉnh.
+Nếu “không có người mẫu” thì chọn loại mẫu (model type) từ ConstantsProvider.models hoặc nhập custom.
+Kiểm tra credits (CreditProvider) trước khi tạo (phải đủ AppConfig.imageCreationCost), nếu không đủ sẽ nhắc nạp thêm credits (mở PurchaseScreen).
+Khi tạo task thành công, hiển thị thông báo và chuyển sang TaskDetailScreen của task vừa tạo.
+TaskDetailScreen (task_detail_screen.dart)
+Màn hình chi tiết một task (nhận taskId).
+Gọi TaskProvider.loadTask() và tự động polling trạng thái task đến khi xử lý xong (bao gồm cả khi đang tạo video).
+Hiển thị:
+Thẻ trạng thái (processing / completed / failed) với màu và icon khác nhau, thời gian tạo, thông báo “đang tự động cập nhật” khi còn polling.
+Ảnh sản phẩm gốc.
+Nếu task đang xử lý ảnh mà chưa có kết quả, hiện card “Đang tạo ảnh thử đồ...”.
+Khi có ảnh try-on (tryOnResult), hiển thị dạng grid; trên từng ảnh có nút “Video” để tạo video từ ảnh đó.
+Khi chưa có video, hiển thị card hướng dẫn “bước tiếp theo” (chọn ảnh → bấm Video → chọn hành động).
+Khi có video (videoResultFinal), hiển thị danh sách video; bấm vào sẽ mở VideoPlayerScreen, có menu phụ để xem hoặc chia sẻ video.
+Nếu có lỗi từ backend (errorMsg), hiển thị card màu đỏ với thông báo lỗi.
+Khi chọn tạo video: mở dialog _VideoActionDialog cho phép chọn “hành động video” (từ ConstantsProvider.videoActions); kiểm tra credits (AppConfig.videoCreationCost), sau đó gọi TaskProvider.createVideo() và load lại task.
+VideoPlayerScreen (video_player_screen.dart)
+Màn hình phát video với video_player + chewie (UI player).
+Nhận videoUrl và tiêu đề tùy chọn; tự khởi tạo controller, auto-play video, có thanh điều khiển, xử lý lỗi khi tải video.
+AppBar có nút chia sẻ; khi bấm, sẽ chia sẻ URL video qua Share.share.
+PurchaseScreen (purchase_screen.dart)
+Màn hình nạp credits (in-app purchase).
+Lấy danh sách gói mua từ backend qua PurchaseProvider.packages và ánh xạ với ProductDetails của store (dùng AppConfig.getStoreProductId).
+Hiển thị danh sách gói mua: tên gói, mô tả, giá, số credits, đánh dấu “POPULAR” cho gói phổ biến.
+Bấm “Buy” sẽ gọi PurchaseProvider.purchaseProduct(), nếu thành công thì reload credits từ CreditProvider và hiện snackbar “Purchase success”; nếu lỗi thì hiển thị snackbar lỗi.
+Có pull-to-refresh để tải lại danh sách gói, và UI lỗi khi không lấy được gói.
+Prompt Maker đã nói:
+Made by Ruben Hassid
+
+Act like a Senior Product Designer + Lead Mobile UX Architect chuyên thiết kế ứng dụng Flutter, có kinh nghiệm xây dựng app AI, SaaS và in-app purchase ở mức production.
+
+Mục tiêu của bạn là: thiết kế UI/UX HOÀN CHỈNH, nhất quán và có thể triển khai ngay cho toàn bộ các màn hình của một mobile app AI tạo ảnh & video. Kết quả phải đủ chi tiết để dev Flutter có thể code trực tiếp mà không cần hỏi lại.
+
+Nhiệm vụ chính:
+Thiết kế UI/UX chi tiết cho tất cả các màn hình được mô tả bên dưới, bám sát logic nghiệp vụ, trạng thái dữ liệu, và flow người dùng.
+
+Cách làm (bắt buộc theo từng bước):
+1) Đọc kỹ toàn bộ mô tả các màn hình, flow nghiệp vụ, provider, và điều kiện (auth, credits, task, purchase).
+2) Xác định design direction tổng thể: phong cách (modern / AI / premium), tone màu, typography, spacing, icon style.
+3) Định nghĩa design system ngắn gọn: màu chính/phụ, text styles, button styles, card styles, trạng thái loading/empty/error.
+4) Với MỖI màn hình, trình bày rõ:
+   - Mục tiêu UX của màn hình
+   - Cấu trúc layout (AppBar, body, cards, buttons, lists…)
+   - Các state quan trọng (loading / success / error / empty)
+   - Hành vi người dùng & chuyển màn
+5) Với các flow phức tạp (Create Task, Task Detail, Purchase):
+   - Mô tả rõ từng bước người dùng thấy gì – làm gì – hệ thống phản hồi ra sao
+   - Chỉ rõ khi nào cần dialog, snackbar, polling, disable button
+6) Đảm bảo UX nhất quán về:
+   - Credits (luôn rõ ràng, không gây bất ngờ)
+   - Trạng thái processing AI (reassuring, có feedback)
+   - Error từ backend (dễ hiểu, có hướng xử lý)
+
+Yêu cầu chi tiết đầu ra:
+- Trình bày theo Markdown, chia section rõ ràng cho từng screen
+- Dùng bullet points, tiêu đề ngắn, không viết lan man
+- Không code Flutter, chỉ mô tả UI/UX nhưng ở mức “dev-ready”
+- Không thêm màn hình hoặc tính năng ngoài mô tả
+- Ưu tiên trải nghiệm người dùng, clarity, và cảm giác “premium AI app”
+
+Bối cảnh ứng dụng:
+- App Flutter
+- Đăng nhập Google
+- AI tạo ảnh try-on và video
+- Credits-based (image cost, video cost)
+- In-app purchase qua store
+- Các Provider: AuthProvider, CreditProvider, TaskProvider, ConstantsProvider, PurchaseProvider
+
+Kết thúc bằng:
+- Tóm tắt nhanh toàn bộ user journey từ mở app → tạo ảnh → tạo video → mua credits
+- 3–5 nguyên tắc UX cốt lõi áp dụng xuyên suốt app
+
+Take a deep breath and work on this problem step-by-step.
+
+
+
+No file chosenNo file chosen
+ChatGPT có thể mắc lỗi. Hãy kiểm tra các thông tin quan trọng. Vui lòng tham khảo Tùy chọn cookie.
